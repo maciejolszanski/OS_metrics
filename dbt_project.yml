@@ -1,0 +1,11 @@
+name: 'os_metrics'
+version: '1.0.0'
+profile: 'os_metrics'
+
+model-paths: ["./src/models"]
+
+models:
+  os_metrics:
+    bronze:
+      +materialized: table
+      +schema: bronze
