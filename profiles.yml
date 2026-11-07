@@ -1,0 +1,7 @@
+os_metrics:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: './data/os_metrics.duckdb' 
+      threads: 4
