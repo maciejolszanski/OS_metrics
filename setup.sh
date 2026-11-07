@@ -22,7 +22,7 @@ esac
 
 echo "Initializing OS_metrics project..."
 
-# 1. Create directory structure
+# 1. Create runtime data directory
 mkdir -p ./data
 
 # 2. Install uv package manager (if missing)
@@ -34,7 +34,13 @@ else
     source "$HOME/.local/bin/env" 2>/dev/null || export PATH="$HOME/.local/bin:$PATH"
 fi
 
-# 3. Download DuckDB CLI binary locally
+# 3. Sync dependencies from pyproject.toml
+if [ -f "pyproject.toml" ]; then
+    echo "Syncing Python dependencies..."
+    uv sync
+fi
+
+# 4. Download DuckDB CLI binary locally
 if [ -f "./duckdb" ]; then
     echo "DuckDB CLI binary already exists. Skipping..."
 else
@@ -45,7 +51,7 @@ else
     chmod +x duckdb
 fi
 
-# 4. Install Telegraf (Zorin OS / Debian / Ubuntu)
+# 5. Install Telegraf (Zorin OS / Debian / Ubuntu)
 if command -v telegraf &> /dev/null; then
     echo "Telegraf is already installed. Skipping..."
 else
@@ -55,8 +61,8 @@ else
     sudo apt update && sudo apt install -y telegraf
 fi
 
-# 5. Initialize database file in DuckDB
-echo "Initializing duckdb DataBase..."
+# 6. Initialize database file in DuckDB
+echo "Initializing DuckDB Database..."
 ./duckdb ./data/os_metrics.duckdb "SELECT 1;" > /dev/null
 
 echo "Environment setup complete!"
