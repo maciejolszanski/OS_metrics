@@ -16,7 +16,7 @@ SELECT
     now() as ingested_at,
     filename as source_file
 FROM read_csv_auto(
-    './data/raw/cpu_*.csv',
+    '{{ env_var("RAW_METRICS_PATH") }}/cpu_*.csv',
     union_by_name=true,
     filename=true
 )

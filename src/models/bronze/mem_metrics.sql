@@ -39,7 +39,7 @@ SELECT
     now() as ingested_at,
     filename as source_file
 FROM read_csv_auto(
-    './data/raw/mem_*.csv',
+    '{{ env_var("RAW_METRICS_PATH") }}/mem_*.csv',
     union_by_name=true,
     filename=true
 )
