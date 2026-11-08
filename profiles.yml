@@ -3,5 +3,5 @@ os_metrics:
   outputs:
     dev:
       type: duckdb
-      path: './data/os_metrics.duckdb' 
+      path: "{{ env_var('DUCKDB_PATH') }}" 
       threads: 4
