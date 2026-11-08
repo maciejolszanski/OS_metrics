@@ -1,0 +1,39 @@
+name: CI Pipeline
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare environment configuration
+        run: cp .env.template .env
+
+      - name: Run project setup
+        run: bash setup.sh
+
+      - name: Generate raw dimension seeds
+        run: |
+          set -o allexport && source .env && set +o allexport
+          bash src/data_generators/generate_host.sh
+          bash src/data_generators/generate_component.sh
+
+      - name: Generate some os_metrics
+        run: |
+          set -o allexport && source .env && set +o allexport
+          timeout --signal=INT 15s bash src/data_generators/generate_metric.sh || true
+
+      - name: Run dbt debug, build and test models
+        run: |
+          set -o allexport && source .env && set +o allexport
+          uv run dbt debug --profiles-dir .
+          uv run dbt build --profiles-dir .
