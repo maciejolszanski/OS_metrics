@@ -18,19 +18,18 @@ mkdir -p "${RAW_DIMENSIONS_PATH}"
 
 # Generate timestamped filename
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-OUTPUT_FILE="${RAW_DIMENSIONS_PATH}/components_${TIMESTAMP}.csv"
+OUTPUT_FILE="${RAW_DIMENSIONS_PATH}/component_${TIMESTAMP}.csv"
 
 # Collect system component specs
 CPU_MODEL=$(lscpu | grep "Model name:" | sed 's/Model name:\s*//' | xargs)
 CPU_CORES=$(nproc)
 TOTAL_RAM_GB=$(free -g | awk '/^Mem:/{print $2}')
 DISK_SIZE_GB=$(lsblk -b -d -o SIZE,TYPE 2>/dev/null | awk '$2=="disk"{sum+=$1} END{print int(sum/1024/1024/1024)}')
-INGESTED_AT=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 
 # Write header and component records to CSV
-echo "ingested_at,component_id,component_name,component_type,capacity" > "${OUTPUT_FILE}"
-echo "${INGESTED_AT},cpu_main,\"${CPU_MODEL}\",CPU,${CPU_CORES} cores" >> "${OUTPUT_FILE}"
-echo "${INGESTED_AT},ram_main,System RAM,RAM,${TOTAL_RAM_GB} GB" >> "${OUTPUT_FILE}"
-echo "${INGESTED_AT},disk_main,Main Storage,DISK,${DISK_SIZE_GB} GB" >> "${OUTPUT_FILE}"
+echo "timestamp,component_id,component_name,component_type,capacity" > "${OUTPUT_FILE}"
+echo "${TIMESTAMP},cpu_main,\"${CPU_MODEL}\",CPU,${CPU_CORES} cores" >> "${OUTPUT_FILE}"
+echo "${TIMESTAMP},ram_main,System RAM,RAM,${TOTAL_RAM_GB} GB" >> "${OUTPUT_FILE}"
+echo "${TIMESTAMP},disk_main,Main Storage,DISK,${DISK_SIZE_GB} GB" >> "${OUTPUT_FILE}"
 
 echo "Generated seed file: ${OUTPUT_FILE}"
