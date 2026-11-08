@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
 # OS Verification
 OS_TYPE="$(uname -s)"
@@ -22,10 +22,28 @@ esac
 
 echo "Initializing OS_metrics project..."
 
-# 1. Create runtime data directory
-mkdir -p ./data
+# 1. Require existing .env file
+if [ ! -f ".env" ]; then
+    echo "Error: .env file is missing!" >&2
+    echo "Please copy .env.example to .env and configure your environment variables first:" >&2
+    echo "  cp .env.example .env" >&2
+    exit 1
+fi
 
-# 2. Install uv package manager (if missing)
+set -o allexport
+source .env
+set +o allexport
+
+# Validate required variables
+if [ -z "${RAW_METRICS_PATH:-}" ] || [ -z "${RAW_DIMENSIONS_PATH:-}" ] || [ -z "${DUCKDB_PATH:-}" ]; then
+    echo "Error: Required path variables (RAW_METRICS_PATH, RAW_DIMENSIONS_PATH, DUCKDB_PATH) are missing in .env." >&2
+    exit 1
+fi
+
+# 2. Create runtime directories from .env configuration
+mkdir -p "$(dirname "${DUCKDB_PATH}")" "${RAW_METRICS_PATH}" "${RAW_DIMENSIONS_PATH}"
+
+# 3. Install uv package manager (if missing)
 if command -v uv &> /dev/null; then
     echo "uv package manager is already installed. Skipping..."
 else
@@ -34,13 +52,13 @@ else
     source "$HOME/.local/bin/env" 2>/dev/null || export PATH="$HOME/.local/bin:$PATH"
 fi
 
-# 3. Sync dependencies from pyproject.toml
+# 4. Sync dependencies from pyproject.toml
 if [ -f "pyproject.toml" ]; then
     echo "Syncing Python dependencies..."
     uv sync
 fi
 
-# 4. Download DuckDB CLI binary locally
+# 5. Download DuckDB CLI binary locally
 if [ -f "./duckdb" ]; then
     echo "DuckDB CLI binary already exists. Skipping..."
 else
@@ -51,7 +69,7 @@ else
     chmod +x duckdb
 fi
 
-# 5. Install Telegraf (Zorin OS / Debian / Ubuntu)
+# 6. Install Telegraf (Zorin OS / Debian / Ubuntu)
 if command -v telegraf &> /dev/null; then
     echo "Telegraf is already installed. Skipping..."
 else
@@ -61,8 +79,8 @@ else
     sudo apt update && sudo apt install -y telegraf
 fi
 
-# 6. Initialize database file in DuckDB
-echo "Initializing DuckDB Database..."
-./duckdb ./data/os_metrics.duckdb "SELECT 1;" > /dev/null
+# 7. Initialize database file in DuckDB using DUCKDB_PATH
+echo "Initializing DuckDB Database at ${DUCKDB_PATH}..."
+./duckdb "${DUCKDB_PATH}" "SELECT 1;" > /dev/null
 
 echo "Environment setup complete!"

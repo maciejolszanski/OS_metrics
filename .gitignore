@@ -13,3 +13,6 @@ duckdb
 .venv/
 __pycache__/
 *.pyc
+
+# secrets & env vars
+.env
