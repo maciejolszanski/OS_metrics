@@ -75,7 +75,7 @@ if command -v telegraf &> /dev/null; then
 else
     echo "Installing Telegraf from official InfluxData repository..."
     sudo mkdir -p /etc/apt/keyrings
-    curl -s https://repos.influxdata.com/influxdata-archive_compat.key | gpg --dearmor | sudo tee /etc/apt/keyrings/influxdata-archive.gpg > /dev/null
+    curl -fsSL https://repos.influxdata.com/influxdata-archive.key | gpg --dearmor | sudo tee /etc/apt/keyrings/influxdata-archive.gpg > /dev/null
     echo 'deb [signed-by=/etc/apt/keyrings/influxdata-archive.gpg] https://repos.influxdata.com/debian stable main' | sudo tee /etc/apt/sources.list.d/influxdata.list
     sudo apt update && sudo apt install -y telegraf
 fi
