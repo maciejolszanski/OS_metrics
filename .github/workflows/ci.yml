@@ -24,13 +24,13 @@ jobs:
       - name: Generate raw dimension seeds
         run: |
           set -o allexport && source .env && set +o allexport
-          bash src/data_generators/generate_hosts.sh
-          bash src/data_generators/generate_components.sh
+          bash src/data_generators/generate_host.sh
+          bash src/data_generators/generate_component.sh
 
       - name: Generate some os_metrics
         run: |
           set -o allexport && source .env && set +o allexport
-          timeout --signal=INT 15s bash src/data_generators/generate_metrics.sh || true
+          timeout --signal=INT 15s bash src/data_generators/generate_metric.sh || true
 
       - name: Run dbt debug, build and test models
         run: |
