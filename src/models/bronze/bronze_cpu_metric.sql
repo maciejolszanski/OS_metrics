@@ -1,3 +1,9 @@
+{{
+    config(
+        alias='cpu_metric'
+    )
+}}
+
 SELECT 
     timestamp,
     measurement,
@@ -20,3 +26,7 @@ FROM read_csv_auto(
     union_by_name=true,
     filename=true
 )
+
+{% if is_incremental() %}
+WHERE timestamp > (SELECT MAX(timestamp) FROM {{ this }})
+{% endif %}
