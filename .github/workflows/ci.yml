@@ -32,8 +32,18 @@ jobs:
           set -o allexport && source .env && set +o allexport
           timeout --signal=INT 15s bash src/data_generators/generate_metric.sh || true
 
-      - name: Run dbt debug, build and test models
+      - name: Parse dbt manifest
+        run: |
+          set -o allexport && source .env && set +o allexport
+          uv run dbt parse
+
+      - name: Verify DuckDB connection (dbt debug)
         run: |
           set -o allexport && source .env && set +o allexport
           uv run dbt debug --profiles-dir .
-          uv run dbt build --profiles-dir .
+
+
+      - name: Run Dagster Integration Test
+        run: |
+          set -o allexport && source .env && set +o allexport
+          uv run dagster job execute -f orchestration/definitions.py -j OS_metrics
