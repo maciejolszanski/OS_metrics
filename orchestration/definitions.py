@@ -12,15 +12,10 @@ from orchestration.assets import dbt_os_metrics_assets
 
 PROJECT_ROOT = Path(__file__).joinpath("..", "..").resolve()
 
-os_metrics_assets_selection = (
-    AssetSelection.key_prefixes("bronze") | 
-    AssetSelection.key_prefixes("silver") | 
-    AssetSelection.key_prefixes("gold")
-)
 
 all_dbt_assets_job = define_asset_job(
     name="OS_metrics",
-    selection=os_metrics_assets_selection
+    selection=AssetSelection.all()
 )
 
 dbt_5min_schedule = ScheduleDefinition(
