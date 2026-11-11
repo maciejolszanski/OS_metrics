@@ -1,5 +1,6 @@
 SELECT 
     timestamp,
+    host,
     component_id,
     component_name,
     component_type,
