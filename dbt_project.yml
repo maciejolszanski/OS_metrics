@@ -4,6 +4,7 @@ profile: 'os_metrics'
 
 model-paths: ["./src/models"]
 snapshot-paths: ["./src/snapshots"]
+macro-paths: ["./src/macros"]
 
 models:
   os_metrics:
