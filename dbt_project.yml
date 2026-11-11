@@ -3,9 +3,14 @@ version: '1.0.0'
 profile: 'os_metrics'
 
 model-paths: ["./src/models"]
+snapshot-paths: ["./src/snapshots"]
 
 models:
   os_metrics:
     bronze:
       +materialized: incremental
       +schema: bronze
+
+snapshots:
+  os_metrics:
+    +target_schema: silver
