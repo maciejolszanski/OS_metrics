@@ -7,5 +7,5 @@ model-paths: ["./src/models"]
 models:
   os_metrics:
     bronze:
-      +materialized: table
+      +materialized: incremental
       +schema: bronze
